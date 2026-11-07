@@ -82,6 +82,21 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/* Tab 4: Pengaturan */}
+      <Tabs.Screen
+        name="pengaturan"
+        options={{
+          title: "Pengaturan",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "settings" : "settings-outline"}
+              size={22}
+              color={color}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

@@ -5,9 +5,8 @@ export default function RootLayout() {
     <Stack>
       {/* Sembunyikan header stack agar header Tabs yang tampil */}
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-
       {/* Menu modul lama (accessible via /menu) */}
-      <Stack.Screen name="menu" options={{ title: "Menu Praktikum" }} />
+      <Stack.Screen name="index_lama" options={{ title: "Menu Praktikum" }} />
 
       {/* Screen modul-modul lama (bisa diakses manual via Link) */}
       <Stack.Screen name="input" options={{ title: "Form Mahasiswa" }} />
