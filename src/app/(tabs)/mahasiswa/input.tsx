@@ -1,3 +1,4 @@
+import { useMahasiswa } from "@/context/MahasiswaContext";
 import { useState } from "react";
 import {
   Alert,
@@ -8,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useMahasiswa } from "./MahasiswaContext";
 
 export default function InputMahasiswaScreen() {
   const { tambahMahasiswa } = useMahasiswa();
@@ -16,11 +16,11 @@ export default function InputMahasiswaScreen() {
   const [nim, setNim] = useState("");
   const [nama, setNama] = useState("");
   const [prodi, setProdi] = useState("");
-  const [noHp, setNoHp] = useState("");
-  const [tahunAngkatan, setTahunAngkatan] = useState("");
+
+  // TANTANGAN 2: State untuk pilihan status
+  const [status, setStatus] = useState<"Aktif" | "Cuti">("Aktif");
 
   const handleSimpan = () => {
-    // Validasi
     if (!nim.trim() || !nama.trim()) {
       Alert.alert(
         "Validasi Gagal",
@@ -29,37 +29,34 @@ export default function InputMahasiswaScreen() {
       return;
     }
 
-    // Tantangan 3: Tambahkan data ke Context
+    // Masukkan data ke State Terpusat (Global)
     tambahMahasiswa({
       nim: nim.trim(),
       nama: nama.trim(),
-      prodi: prodi.trim() || "Belum ditentukan",
-      status: "Aktif",
-      noHp: noHp.trim() || "-",
-      tahunAngkatan:
-        tahunAngkatan.trim() || new Date().getFullYear().toString(),
+      prodi: prodi.trim() || "Teknik Informatika",
+      status: status, // TANTANGAN 2: Gunakan status yang dipilih
+      noHp: "-",
+      tahunAngkatan: new Date().getFullYear().toString(),
     });
 
     Alert.alert(
-      "Data Berhasil Disimpan",
-      `Mahasiswa baru atas nama ${nama} (${nim}) telah ditambahkan ke daftar.`,
-      [{ text: "OK" }],
+      "Sukses Tersimpan! 🎉",
+      `Mahasiswa baru atas nama ${nama} (${nim}) telah terdaftar di database lokal.`,
     );
 
     // Reset formulir setelah disimpan
     setNim("");
     setNama("");
     setProdi("");
-    setNoHp("");
-    setTahunAngkatan("");
+    setStatus("Aktif");
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Formulir Pendaftaran Mahasiswa</Text>
       <Text style={styles.subtitle}>
-        Isikan data mahasiswa baru secara teliti pada kolom formulir di bawah
-        ini:
+        Data yang diinputkan di sini akan langsung tampil otomatis di tab Data
+        dan Report!
       </Text>
 
       <View style={styles.formGroup}>
@@ -96,29 +93,46 @@ export default function InputMahasiswaScreen() {
         />
       </View>
 
-      {/* Tantangan 2 & 3: Field Tambahan */}
+      {/* TANTANGAN 2: Pilihan Status Mahasiswa */}
       <View style={styles.formGroup}>
-        <Text style={styles.label}>Nomor HP</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Contoh: 081234567890"
-          placeholderTextColor="#94a3b8"
-          value={noHp}
-          onChangeText={setNoHp}
-          keyboardType="phone-pad"
-        />
-      </View>
+        <Text style={styles.label}>Status Mahasiswa</Text>
+        <View style={styles.statusContainer}>
+          <TouchableOpacity
+            style={[
+              styles.statusButton,
+              status === "Aktif" && styles.statusButtonActive,
+            ]}
+            onPress={() => setStatus("Aktif")}
+            activeOpacity={0.8}
+          >
+            <Text
+              style={[
+                styles.statusText,
+                status === "Aktif" && styles.statusTextActive,
+              ]}
+            >
+              Aktif
+            </Text>
+          </TouchableOpacity>
 
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Tahun Angkatan</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Contoh: 2023"
-          placeholderTextColor="#94a3b8"
-          value={tahunAngkatan}
-          onChangeText={setTahunAngkatan}
-          keyboardType="numeric"
-        />
+          <TouchableOpacity
+            style={[
+              styles.statusButton,
+              status === "Cuti" && styles.statusButtonActive,
+            ]}
+            onPress={() => setStatus("Cuti")}
+            activeOpacity={0.8}
+          >
+            <Text
+              style={[
+                styles.statusText,
+                status === "Cuti" && styles.statusTextActive,
+              ]}
+            >
+              Cuti
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <TouchableOpacity
@@ -133,27 +147,11 @@ export default function InputMahasiswaScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8fafc",
-  },
-  content: {
-    padding: 18,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#0f172a",
-  },
-  subtitle: {
-    fontSize: 12,
-    color: "#64748b",
-    marginTop: 4,
-    marginBottom: 18,
-  },
-  formGroup: {
-    marginBottom: 14,
-  },
+  container: { flex: 1, backgroundColor: "#f8fafc" },
+  content: { padding: 18 },
+  title: { fontSize: 16, fontWeight: "bold", color: "#0f172a" },
+  subtitle: { fontSize: 12, color: "#64748b", marginTop: 4, marginBottom: 18 },
+  formGroup: { marginBottom: 14 },
   label: {
     fontSize: 12.5,
     fontWeight: "600",
@@ -170,6 +168,32 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#0f172a",
   },
+  // TANTANGAN 2: Styles untuk pilihan status
+  statusContainer: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  statusButton: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+    borderWidth: 1,
+    borderColor: "#cbd5e1",
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  statusButtonActive: {
+    backgroundColor: "#072deb",
+    borderColor: "#072deb",
+  },
+  statusText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#64748b",
+  },
+  statusTextActive: {
+    color: "#ffffff",
+  },
   button: {
     backgroundColor: "#072deb",
     paddingVertical: 12,
@@ -177,9 +201,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
-  buttonText: {
-    color: "#ffffff",
-    fontSize: 13.5,
-    fontWeight: "bold",
-  },
+  buttonText: { color: "#ffffff", fontSize: 13.5, fontWeight: "bold" },
 });

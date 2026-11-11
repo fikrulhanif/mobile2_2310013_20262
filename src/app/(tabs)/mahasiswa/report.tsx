@@ -1,30 +1,33 @@
+import { useMahasiswa } from "@/context/MahasiswaContext";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { useMahasiswa } from "./MahasiswaContext";
 
 export default function ReportMahasiswaScreen() {
   const { dataMahasiswa } = useMahasiswa();
 
-  // Tantangan 3: Hitung statistik dari data real
+  // Kalkulasi metrik statistik secara real-time
   const totalMahasiswa = dataMahasiswa.length;
   const mahasiswaAktif = dataMahasiswa.filter(
     (m) => m.status === "Aktif",
   ).length;
-  const mahasiswaCuti = dataMahasiswa.filter((m) => m.status === "Cuti").length;
-  const teknikInformatika = dataMahasiswa.filter(
-    (m) => m.prodi === "Teknik Informatika",
+  const mahasiswaTI = dataMahasiswa.filter((m) =>
+    m.prodi.toLowerCase().includes("informatika"),
   ).length;
-  const sistemInformasi = dataMahasiswa.filter(
-    (m) => m.prodi === "Sistem Informasi",
+  const mahasiswaSI = dataMahasiswa.filter((m) =>
+    m.prodi.toLowerCase().includes("sistem"),
   ).length;
+  const persentaseAktif =
+    totalMahasiswa > 0
+      ? ((mahasiswaAktif / totalMahasiswa) * 100).toFixed(1)
+      : "0.0";
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Laporan & Ringkasan Data</Text>
+      <Text style={styles.title}>Laporan & Ringkasan Data Real-Time</Text>
       <Text style={styles.subtitle}>
-        Rekapitulasi statistik mahasiswa aktif per semester berjalan:
+        Statistik diperbarui secara otomatis ketika data ditambah atau dihapus:
       </Text>
 
-      {/* Grid 2x2 Kartu Statistik - Tantangan 3: Data Real */}
+      {/* Grid 2x2 Kartu Statistik Dinamis */}
       <View style={styles.grid}>
         <View style={[styles.card, { borderLeftColor: "#072deb" }]}>
           <Text style={styles.number}>{totalMahasiswa}</Text>
@@ -37,39 +40,25 @@ export default function ReportMahasiswaScreen() {
         </View>
 
         <View style={[styles.card, { borderLeftColor: "#d97706" }]}>
-          <Text style={styles.number}>{teknikInformatika}</Text>
+          <Text style={styles.number}>{mahasiswaTI}</Text>
           <Text style={styles.cardLabel}>Teknik Informatika</Text>
         </View>
 
         <View style={[styles.card, { borderLeftColor: "#7c3aed" }]}>
-          <Text style={styles.number}>{sistemInformasi}</Text>
+          <Text style={styles.number}>{mahasiswaSI}</Text>
           <Text style={styles.cardLabel}>Sistem Informasi</Text>
-        </View>
-
-        <View style={[styles.card, { borderLeftColor: "#dc2626" }]}>
-          <Text style={styles.number}>{mahasiswaCuti}</Text>
-          <Text style={styles.cardLabel}>Mahasiswa Cuti</Text>
-        </View>
-
-        <View style={[styles.card, { borderLeftColor: "#64748b" }]}>
-          <Text style={styles.number}>
-            {mahasiswaAktif > 0
-              ? ((mahasiswaAktif / totalMahasiswa) * 100).toFixed(1)
-              : 0}
-            %
-          </Text>
-          <Text style={styles.cardLabel}>Rasio Keaktifan</Text>
         </View>
       </View>
 
-      {/* Kotak Ringkasan Catatan - Tantangan 3: Data Real */}
+      {/* Kotak Ringkasan Catatan Dinamis */}
       <View style={styles.summaryBox}>
-        <Text style={styles.summaryTitle}>📌 Catatan Akademik Terkini</Text>
+        <Text style={styles.summaryTitle}>Ringkasan Akademik Real-Time</Text>
         <Text style={styles.summaryDesc}>
-          • Total {totalMahasiswa} mahasiswa terdaftar dalam sistem.{"\n"}•
-          Sebanyak {mahasiswaCuti} mahasiswa tercatat sedang mengambil cuti
-          kuliah.{"\n"}• Data diperbarui secara otomatis saat mahasiswa baru
-          ditambahkan.
+          • Persentase keaktifan mahasiswa saat ini adalah {persentaseAktif}%.
+          {"\n"}• Sebanyak {totalMahasiswa - mahasiswaAktif} mahasiswa tercatat
+          cuti kuliah.
+          {"\n"}• Seluruh perhitungan terhubung langsung ke Context API secara
+          instan.
         </Text>
       </View>
     </ScrollView>
@@ -77,29 +66,11 @@ export default function ReportMahasiswaScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8fafc",
-  },
-  content: {
-    padding: 18,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#0f172a",
-  },
-  subtitle: {
-    fontSize: 12,
-    color: "#64748b",
-    marginTop: 4,
-    marginBottom: 18,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
+  container: { flex: 1, backgroundColor: "#f8fafc" },
+  content: { padding: 18 },
+  title: { fontSize: 16, fontWeight: "bold", color: "#0f172a" },
+  subtitle: { fontSize: 12, color: "#64748b", marginTop: 4, marginBottom: 18 },
+  grid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
   card: {
     width: "48%",
     backgroundColor: "#ffffff",
@@ -109,11 +80,7 @@ const styles = StyleSheet.create({
     borderColor: "#e2e8f0",
     borderLeftWidth: 4,
   },
-  number: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0f172a",
-  },
+  number: { fontSize: 24, fontWeight: "bold", color: "#0f172a" },
   cardLabel: {
     fontSize: 11.5,
     color: "#64748b",
@@ -134,9 +101,5 @@ const styles = StyleSheet.create({
     color: "#0f172a",
     marginBottom: 6,
   },
-  summaryDesc: {
-    fontSize: 12,
-    color: "#475569",
-    lineHeight: 18,
-  },
+  summaryDesc: { fontSize: 12, color: "#475569", lineHeight: 18 },
 });

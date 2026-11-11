@@ -1,27 +1,39 @@
-import { Ionicons } from "@expo/vector-icons";
+import { useMahasiswa } from "@/context/MahasiswaContext";
+import { useState } from "react";
 import {
   Alert,
   FlatList,
-  Linking,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { useMahasiswa } from "./MahasiswaContext";
 
 export default function DataMahasiswaScreen() {
-  const { dataMahasiswa } = useMahasiswa();
+  // Ambil data dinamis dan aksi hapus dari Context
+  const { dataMahasiswa, hapusMahasiswa } = useMahasiswa();
 
-  const handleCall = (nama: string, noHp: string) => {
+  // TANTANGAN 3: State untuk pencarian
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // TANTANGAN 3: Filter data berdasarkan pencarian
+  const filteredData = searchQuery.trim()
+    ? dataMahasiswa.filter((item) =>
+        item.nama.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    : dataMahasiswa;
+
+  const konfirmasiHapus = (id: string, nama: string) => {
     Alert.alert(
-      "Hubungi Mahasiswa",
-      `Apakah Anda ingin menghubungi ${nama} di nomor ${noHp}?`,
+      "Konfirmasi Hapus",
+      `Apakah Anda yakin ingin menghapus data ${nama}?`,
       [
         { text: "Batal", style: "cancel" },
         {
-          text: "Hubungi",
-          onPress: () => Linking.openURL(`tel:${noHp}`),
+          text: "Hapus",
+          style: "destructive",
+          onPress: () => hapusMahasiswa(id),
         },
       ],
     );
@@ -29,10 +41,35 @@ export default function DataMahasiswaScreen() {
 
   return (
     <View style={styles.container}>
+      {/* TANTANGAN 3: Kolom Pencarian */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Cari nama mahasiswa..."
+          placeholderTextColor="#94a3b8"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+      </View>
+
       <FlatList
-        data={dataMahasiswa}
+        data={filteredData}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listArea}
+        ListEmptyComponent={
+          <View style={styles.emptyBox}>
+            <Text style={styles.emptyText}>
+              {searchQuery
+                ? "Tidak ada mahasiswa dengan nama tersebut."
+                : "Belum ada data mahasiswa."}
+            </Text>
+            <Text style={styles.emptySubText}>
+              {searchQuery
+                ? "Coba kata kunci lain."
+                : "Silakan tambahkan data baru melalui tab Input."}
+            </Text>
+          </View>
+        }
         renderItem={({ item }) => (
           <View style={styles.card}>
             {/* Avatar Inisial */}
@@ -45,17 +82,10 @@ export default function DataMahasiswaScreen() {
               <Text style={styles.nama}>{item.nama}</Text>
               <Text style={styles.subText}>NIM: {item.nim}</Text>
               <Text style={styles.prodiText}>{item.prodi}</Text>
-
-              {/* Tantangan 2: Info Tambahan */}
-              <Text style={styles.extraInfo}>📱 {item.noHp}</Text>
-              <Text style={styles.extraInfo}>
-                🎓 Angkatan {item.tahunAngkatan}
-              </Text>
             </View>
 
-            {/* Area Kanan: Badge dan Tombol */}
-            <View style={styles.rightArea}>
-              {/* Badge Status */}
+            {/* Badge Status & Tombol Hapus */}
+            <View style={{ alignItems: "flex-end", gap: 6 }}>
               <View
                 style={[
                   styles.badge,
@@ -75,14 +105,10 @@ export default function DataMahasiswaScreen() {
                   {item.status}
                 </Text>
               </View>
-
-              {/* Tantangan 2: Tombol Aksi Call */}
               <TouchableOpacity
-                style={styles.callButton}
-                onPress={() => handleCall(item.nama, item.noHp)}
-                activeOpacity={0.7}
+                onPress={() => konfirmasiHapus(item.id, item.nama)}
               >
-                <Ionicons name="call" size={16} color="#ffffff" />
+                <Text style={styles.hapusText}>Hapus</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -93,17 +119,29 @@ export default function DataMahasiswaScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: { flex: 1, backgroundColor: "#f8fafc" },
+  searchContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
+    backgroundColor: "#ffffff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#e2e8f0",
+  },
+  searchInput: {
     backgroundColor: "#f8fafc",
+    borderWidth: 1,
+    borderColor: "#cbd5e1",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 13,
+    color: "#0f172a",
   },
-  listArea: {
-    padding: 16,
-    gap: 12,
-  },
+  listArea: { padding: 16, gap: 12 },
   card: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     backgroundColor: "#ffffff",
     padding: 14,
     borderRadius: 8,
@@ -137,20 +175,7 @@ const styles = StyleSheet.create({
     color: "#64748b",
     marginTop: 2,
   },
-  prodiText: {
-    fontSize: 12,
-    color: "#072deb",
-    marginTop: 2,
-  },
-  extraInfo: {
-    fontSize: 11,
-    color: "#64748b",
-    marginTop: 3,
-  },
-  rightArea: {
-    alignItems: "flex-end",
-    gap: 8,
-  },
+  prodiText: { fontSize: 12, color: "#072deb", marginTop: 2 },
   badge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -169,15 +194,9 @@ const styles = StyleSheet.create({
   badgeTextActive: {
     color: "#16a34a",
   },
-  badgeTextInactive: {
-    color: "#dc2626",
-  },
-  callButton: {
-    backgroundColor: "#16a34a",
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  badgeTextInactive: { color: "#dc2626" },
+  hapusText: { fontSize: 11, color: "#dc2626", fontWeight: "600" },
+  emptyBox: { alignItems: "center", marginTop: 40 },
+  emptyText: { fontSize: 14, fontWeight: "bold", color: "#64748b" },
+  emptySubText: { fontSize: 12, color: "#94a3b8", marginTop: 4 },
 });

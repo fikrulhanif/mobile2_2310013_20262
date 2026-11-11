@@ -1,6 +1,6 @@
+import { MahasiswaProvider } from "@/context/MahasiswaContext";
 import { Ionicons } from "@expo/vector-icons";
 import { TopTabs } from "expo-router/js-top-tabs";
-import { MahasiswaProvider } from "./MahasiswaContext";
 
 export default function MahasiswaTopTabsLayout() {
   return (
@@ -43,7 +43,7 @@ export default function MahasiswaTopTabsLayout() {
               <Ionicons
                 name={focused ? "book" : "book-outline"}
                 size={22}
-                colour={color}
+                color={color}
               />
             ),
           }}
@@ -58,7 +58,7 @@ export default function MahasiswaTopTabsLayout() {
               <Ionicons
                 name={focused ? "create" : "create-outline"}
                 size={22}
-                colour={color}
+                color={color}
               />
             ),
           }}
@@ -73,7 +73,7 @@ export default function MahasiswaTopTabsLayout() {
               <Ionicons
                 name={focused ? "document-text" : "document-outline"}
                 size={22}
-                colour={color}
+                color={color}
               />
             ),
           }}
