@@ -1,7 +1,22 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useMahasiswa } from "./MahasiswaContext";
 
 export default function ReportMahasiswaScreen() {
+  const { dataMahasiswa } = useMahasiswa();
+
+  // Tantangan 3: Hitung statistik dari data real
+  const totalMahasiswa = dataMahasiswa.length;
+  const mahasiswaAktif = dataMahasiswa.filter(
+    (m) => m.status === "Aktif",
+  ).length;
+  const mahasiswaCuti = dataMahasiswa.filter((m) => m.status === "Cuti").length;
+  const teknikInformatika = dataMahasiswa.filter(
+    (m) => m.prodi === "Teknik Informatika",
+  ).length;
+  const sistemInformasi = dataMahasiswa.filter(
+    (m) => m.prodi === "Sistem Informasi",
+  ).length;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Laporan & Ringkasan Data</Text>
@@ -9,36 +24,52 @@ export default function ReportMahasiswaScreen() {
         Rekapitulasi statistik mahasiswa aktif per semester berjalan:
       </Text>
 
-      {/* Grid 2x2 Kartu Statistik */}
+      {/* Grid 2x2 Kartu Statistik - Tantangan 3: Data Real */}
       <View style={styles.grid}>
         <View style={[styles.card, { borderLeftColor: "#072deb" }]}>
-          <Text style={styles.number}>128</Text>
+          <Text style={styles.number}>{totalMahasiswa}</Text>
           <Text style={styles.cardLabel}>Total Mahasiswa</Text>
         </View>
 
         <View style={[styles.card, { borderLeftColor: "#16a34a" }]}>
-          <Text style={styles.number}>118</Text>
+          <Text style={styles.number}>{mahasiswaAktif}</Text>
           <Text style={styles.cardLabel}>Mahasiswa Aktif</Text>
         </View>
 
         <View style={[styles.card, { borderLeftColor: "#d97706" }]}>
-          <Text style={styles.number}>74</Text>
+          <Text style={styles.number}>{teknikInformatika}</Text>
           <Text style={styles.cardLabel}>Teknik Informatika</Text>
         </View>
 
         <View style={[styles.card, { borderLeftColor: "#7c3aed" }]}>
-          <Text style={styles.number}>54</Text>
+          <Text style={styles.number}>{sistemInformasi}</Text>
           <Text style={styles.cardLabel}>Sistem Informasi</Text>
+        </View>
+
+        <View style={[styles.card, { borderLeftColor: "#dc2626" }]}>
+          <Text style={styles.number}>{mahasiswaCuti}</Text>
+          <Text style={styles.cardLabel}>Mahasiswa Cuti</Text>
+        </View>
+
+        <View style={[styles.card, { borderLeftColor: "#64748b" }]}>
+          <Text style={styles.number}>
+            {mahasiswaAktif > 0
+              ? ((mahasiswaAktif / totalMahasiswa) * 100).toFixed(1)
+              : 0}
+            %
+          </Text>
+          <Text style={styles.cardLabel}>Rasio Keaktifan</Text>
         </View>
       </View>
 
-      {/* Kotak Ringkasan Catatan */}
+      {/* Kotak Ringkasan Catatan - Tantangan 3: Data Real */}
       <View style={styles.summaryBox}>
         <Text style={styles.summaryTitle}>📌 Catatan Akademik Terkini</Text>
         <Text style={styles.summaryDesc}>
-          • Rasio keaktifan mahasiswa semester ini mencapai 92.1%.{"\n"}
-          • Sebanyak 10 mahasiswa tercatat sedang mengambil cuti kuliah.{"\n"}
-          • Pendaftaran mahasiswa baru jalur transfer masih berlangsung.
+          • Total {totalMahasiswa} mahasiswa terdaftar dalam sistem.{"\n"}•
+          Sebanyak {mahasiswaCuti} mahasiswa tercatat sedang mengambil cuti
+          kuliah.{"\n"}• Data diperbarui secara otomatis saat mahasiswa baru
+          ditambahkan.
         </Text>
       </View>
     </ScrollView>

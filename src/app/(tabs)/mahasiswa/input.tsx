@@ -1,41 +1,65 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  View,
+  Alert,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Alert,
+  View,
 } from "react-native";
+import { useMahasiswa } from "./MahasiswaContext";
 
 export default function InputMahasiswaScreen() {
+  const { tambahMahasiswa } = useMahasiswa();
+
   const [nim, setNim] = useState("");
   const [nama, setNama] = useState("");
   const [prodi, setProdi] = useState("");
+  const [noHp, setNoHp] = useState("");
+  const [tahunAngkatan, setTahunAngkatan] = useState("");
 
   const handleSimpan = () => {
+    // Validasi
     if (!nim.trim() || !nama.trim()) {
-      Alert.alert("Validasi Gagal", "NIM dan Nama Lengkap mahasiswa wajib diisi!");
+      Alert.alert(
+        "Validasi Gagal",
+        "NIM dan Nama Lengkap mahasiswa wajib diisi!",
+      );
       return;
     }
 
+    // Tantangan 3: Tambahkan data ke Context
+    tambahMahasiswa({
+      nim: nim.trim(),
+      nama: nama.trim(),
+      prodi: prodi.trim() || "Belum ditentukan",
+      status: "Aktif",
+      noHp: noHp.trim() || "-",
+      tahunAngkatan:
+        tahunAngkatan.trim() || new Date().getFullYear().toString(),
+    });
+
     Alert.alert(
       "Data Berhasil Disimpan",
-      `Mahasiswa baru atas nama ${nama} (${nim}) telah ditambahkan.`
+      `Mahasiswa baru atas nama ${nama} (${nim}) telah ditambahkan ke daftar.`,
+      [{ text: "OK" }],
     );
 
     // Reset formulir setelah disimpan
     setNim("");
     setNama("");
     setProdi("");
+    setNoHp("");
+    setTahunAngkatan("");
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Formulir Pendaftaran Mahasiswa</Text>
       <Text style={styles.subtitle}>
-        Isikan data mahasiswa baru secara teliti pada kolom formulir di bawah ini:
+        Isikan data mahasiswa baru secara teliti pada kolom formulir di bawah
+        ini:
       </Text>
 
       <View style={styles.formGroup}>
@@ -72,7 +96,36 @@ export default function InputMahasiswaScreen() {
         />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleSimpan} activeOpacity={0.8}>
+      {/* Tantangan 2 & 3: Field Tambahan */}
+      <View style={styles.formGroup}>
+        <Text style={styles.label}>Nomor HP</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Contoh: 081234567890"
+          placeholderTextColor="#94a3b8"
+          value={noHp}
+          onChangeText={setNoHp}
+          keyboardType="phone-pad"
+        />
+      </View>
+
+      <View style={styles.formGroup}>
+        <Text style={styles.label}>Tahun Angkatan</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Contoh: 2023"
+          placeholderTextColor="#94a3b8"
+          value={tahunAngkatan}
+          onChangeText={setTahunAngkatan}
+          keyboardType="numeric"
+        />
+      </View>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSimpan}
+        activeOpacity={0.8}
+      >
         <Text style={styles.buttonText}>Simpan Data Mahasiswa</Text>
       </TouchableOpacity>
     </ScrollView>

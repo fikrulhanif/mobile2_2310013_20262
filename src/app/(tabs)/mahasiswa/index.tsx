@@ -1,28 +1,36 @@
-import React from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
-
-interface MahasiswaItem {
-  id: string;
-  nim: string;
-  nama: string;
-  prodi: string;
-  status: "Aktif" | "Cuti";
-}
-
-// Data dummy untuk praktikum
-const DATA_MAHASISWA: MahasiswaItem[] = [
-  { id: "1", nim: "230101001", nama: "Ahmad Fauzi", prodi: "Teknik Informatika", status: "Aktif" },
-  { id: "2", nim: "230101002", nama: "Budi Santoso", prodi: "Sistem Informasi", status: "Aktif" },
-  { id: "3", nim: "230101003", nama: "Citra Dewi", prodi: "Teknik Informatika", status: "Aktif" },
-  { id: "4", nim: "230101004", nama: "Dedi Kurniawan", prodi: "Sistem Informasi", status: "Cuti" },
-  { id: "5", nim: "230101005", nama: "Eka Rahmawati", prodi: "Teknik Informatika", status: "Aktif" }
-];
+import { Ionicons } from "@expo/vector-icons";
+import {
+  Alert,
+  FlatList,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useMahasiswa } from "./MahasiswaContext";
 
 export default function DataMahasiswaScreen() {
+  const { dataMahasiswa } = useMahasiswa();
+
+  const handleCall = (nama: string, noHp: string) => {
+    Alert.alert(
+      "Hubungi Mahasiswa",
+      `Apakah Anda ingin menghubungi ${nama} di nomor ${noHp}?`,
+      [
+        { text: "Batal", style: "cancel" },
+        {
+          text: "Hubungi",
+          onPress: () => Linking.openURL(`tel:${noHp}`),
+        },
+      ],
+    );
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
-        data={DATA_MAHASISWA}
+        data={dataMahasiswa}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listArea}
         renderItem={({ item }) => (
@@ -37,23 +45,45 @@ export default function DataMahasiswaScreen() {
               <Text style={styles.nama}>{item.nama}</Text>
               <Text style={styles.subText}>NIM: {item.nim}</Text>
               <Text style={styles.prodiText}>{item.prodi}</Text>
+
+              {/* Tantangan 2: Info Tambahan */}
+              <Text style={styles.extraInfo}>📱 {item.noHp}</Text>
+              <Text style={styles.extraInfo}>
+                🎓 Angkatan {item.tahunAngkatan}
+              </Text>
             </View>
 
-            {/* Badge Status */}
-            <View
-              style={[
-                styles.badge,
-                item.status === "Aktif" ? styles.badgeActive : styles.badgeInactive,
-              ]}
-            >
-              <Text
+            {/* Area Kanan: Badge dan Tombol */}
+            <View style={styles.rightArea}>
+              {/* Badge Status */}
+              <View
                 style={[
-                  styles.badgeText,
-                  item.status === "Aktif" ? styles.badgeTextActive : styles.badgeTextInactive,
+                  styles.badge,
+                  item.status === "Aktif"
+                    ? styles.badgeActive
+                    : styles.badgeInactive,
                 ]}
               >
-                {item.status}
-              </Text>
+                <Text
+                  style={[
+                    styles.badgeText,
+                    item.status === "Aktif"
+                      ? styles.badgeTextActive
+                      : styles.badgeTextInactive,
+                  ]}
+                >
+                  {item.status}
+                </Text>
+              </View>
+
+              {/* Tantangan 2: Tombol Aksi Call */}
+              <TouchableOpacity
+                style={styles.callButton}
+                onPress={() => handleCall(item.nama, item.noHp)}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="call" size={16} color="#ffffff" />
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -73,7 +103,7 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     backgroundColor: "#ffffff",
     padding: 14,
     borderRadius: 8,
@@ -112,6 +142,15 @@ const styles = StyleSheet.create({
     color: "#072deb",
     marginTop: 2,
   },
+  extraInfo: {
+    fontSize: 11,
+    color: "#64748b",
+    marginTop: 3,
+  },
+  rightArea: {
+    alignItems: "flex-end",
+    gap: 8,
+  },
   badge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -132,5 +171,13 @@ const styles = StyleSheet.create({
   },
   badgeTextInactive: {
     color: "#dc2626",
+  },
+  callButton: {
+    backgroundColor: "#16a34a",
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
