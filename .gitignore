@@ -1,4 +1,5 @@
 # === MONOREPO ROOT ===
+PROJECT_CONTEXT.md
 PROJECT_CONTEXT.md.backup
 *.log
 .DS_Store
