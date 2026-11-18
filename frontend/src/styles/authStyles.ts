@@ -120,46 +120,55 @@ export const authStyles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     marginTop: 6,
-shadowColor: "#2563EB",
-shadowOffset: { width: 0, height: 6 },
-shadowOpacity: 0.25,
-shadowRadius: 12,
-elevation: 4,
-},
-primaryButtonText: {
-color: "#FFFFFF",
-fontSize: 15,
-fontWeight: "700",
-},
-dividerRow: {
-flexDirection: "row",
-alignItems: "center",
-marginVertical: 20,
-},
-dividerLine: {
-flex: 1,
-height: 1,
-backgroundColor: "#E2E8F0",
-},
-dividerText: {
-fontSize: 12,
-color: "#94A3B8",
-marginHorizontal: 12,
-fontWeight: "500",
-},
-footerRow: {
-flexDirection: "row",
-justifyContent: "center",
-alignItems: "center",
-gap: 6,
-},
-footerText: {
-fontSize: 13.5,
-color: "#64748B",
-},
-footerLink: {
-fontSize: 13.5,
-fontWeight: "700",
-color: "#2563EB",
-},
-})
+    shadowColor: "#2563EB",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  primaryButtonDisabled: {
+    opacity: 0.65,
+  },
+  primaryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F8FAFC",
+  },
+  dividerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#E2E8F0",
+  },
+  dividerText: {
+    fontSize: 12,
+    color: "#94A3B8",
+    marginHorizontal: 12,
+    fontWeight: "500",
+  },
+  footerRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 6,
+  },
+  footerText: {
+    fontSize: 13.5,
+    color: "#64748B",
+  },
+  footerLink: {
+    fontSize: 13.5,
+    fontWeight: "700",
+    color: "#2563EB",
+  },
+});
